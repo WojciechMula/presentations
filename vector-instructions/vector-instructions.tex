@@ -1,0 +1,566 @@
+\documentclass{beamer}
+
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{chains,arrows,automata,decorations.markings,positioning,calc,decorations.pathreplacing,patterns}
+
+\begin{document}
+
+\frame{
+    \begin{center}
+        \textbf{\huge Vector instructions}
+
+        Wojciech Muła, \href{http://0x80.pl}{0x80.pl} January 2021
+    \end{center}
+
+    \vfill
+
+    \pause
+    What we cover?
+
+    \begin{itemize}
+        \pause
+        \item What are \textbf{vector instructions} or \textbf{SIMD instructions}
+        \pause
+        \item Why they are important
+        \pause
+        \item How do they work
+        \pause
+        \item What are good for
+    \end{itemize}
+
+    \vfill
+}
+
+\frame{
+    \frametitle{Where can we find vectors?}
+
+    \begin{itemize}
+        \pause
+        \item Shortly: vectors are \emph{everywhere}
+        \pause
+        \item All kinds of engineering simulations (mechanical, electrical, chemical)
+        \pause
+        \item Scientific simulations (weather forecasting, detecting black holes, looking for new particles)
+        \pause
+        \item Digital signal processing (sound, video, 3D graphics, computer vision, compression)
+        \pause
+        \item Machine Learning\pause\ (sorry for the buzzword)
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{What is a vector?}
+
+    \begin{itemize}
+        \item In the maths a \textbf{vector} is a sequence of numbers (\emph{scalars})
+        \pause
+        \item The IT world uses the term \textbf{array} for vectors
+        \pause
+        \item In programming an array of numbers models a vector\\
+              $v = (1, 2, 3)$ $\Rightarrow$ \texttt{int v[3] = \{1, 2, 3\};} {\tiny (C/C++/Java)}
+              $v = (1, 2, 3)$ $\Rightarrow$ \texttt{v = [1, 2, 3]} {\tiny (Python)}
+        \pause
+        \item An array can hold anything, not only bare numbers, but
+              also pixels (images), samples (sound), points (3D models),
+              characters (text)
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{How we would add two vectors? -- part 1}
+
+    Suppose we have two vectors of size 8:
+
+    \pause
+    $$a = (1, 2, 3, 4, 5, 6, 7, 8)$$
+
+    \pause
+    $$b = (7, 1, 4, 2, 3, 5, 1, 0)$$
+
+    \pause
+    Their sum $c$ is:
+
+    $$c = a + b = (8, 3, 7, 6, 8, 11, 8, 8)$$
+}
+
+\frame{
+    \frametitle{How we would add two vectors? -- part 3}
+
+    A program that performs vector addition is quite simple:
+    \lstinputlisting[language=C++]{vector-add-naive.cpp}
+
+    \pause
+    It can be written with a loop:
+    \lstinputlisting[language=C++]{vector-add-loop.cpp}
+}
+
+\frame{
+    \frametitle{How we would add two vectors? -- part 4}
+
+    \lstinputlisting[language=C++]{vector-add-loop.cpp}
+
+    \vfill
+
+    \pause
+    Despite the form, the number of basic instruction is:
+
+    \begin{itemize}
+        \pause
+        \item 16 loads from memory (\texttt{a[0..7]} and \texttt{b[0..7]})
+        \pause
+        \item 8 additions (\texttt{+})
+        \pause
+        \item 8 stores to memory (\texttt{c[0..7]})
+    \end{itemize}
+
+    \vfill
+}
+
+\frame{
+    \frametitle{Hardware dedicated to vector operations}
+
+    \begin{itemize}
+        \pause
+        \item CPUs can boost vector operations by providing dedicated \textbf{vector instructions}
+        \pause
+        \item \ldots often called \textbf{SIMD} instructions
+        \pause
+        \item A vector instruction is a hardware implementation of given basic vector operation
+        \pause
+        \item Vector instructions were provided by supercomputers even in 1960's
+        \pause
+        \item In commodity hardware used in PC, laptops, phones the first vector instructions
+              appeared in late 1990's
+        \pause
+        \item GPUs usually have SIMD execution units
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{What is SIMD?}
+
+    \begin{itemize}
+        \pause
+        \item James Flynn in 1970's introduced rough classification of \emph{computer systems}
+        \pause
+        \item A computer can execute either \textbf{single} or \textbf{multiple} instructions at once
+        \pause
+        \item An instruction can deal with either \textbf{single} or \textbf{multiple} data at once
+        \pause
+        \item SIMD means: \emph{Single Instructions, Multiple Data}
+        \pause
+        \item Here "multiple data" means "a vector"
+        \pause
+        \item Most \textbf{CPU cores} work in SISD model: \emph{Single Instruction, Single Data}
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{How does vector instruction work then? --- part 1}
+
+    Suppose vectors have 8 elements
+
+    Operation is $c = a + b$
+
+    \begin{center}
+        \include{pictures/simd-vertop.tex}
+    \end{center}
+}
+
+\frame{
+    \frametitle{How does vector instruction work then? --- part 2}
+
+    How it looks like in code:
+    \pause
+    \vfill
+    \begin{adjustbox}{max width=10cm}
+        \lstinputlisting[language=C++]{vector-add-hardware.cpp}
+    \end{adjustbox}
+
+    \vfill
+
+    \begin{itemize}
+        \pause
+        \item \texttt{vector\_foo} represents a \textbf{single CPU instruction}
+
+        \pause
+        \item Here we have to execute four instructions
+
+        \pause
+        \item In traditional approach we had 32 instructions
+
+        \pause
+        \item Both approaches performs exactly the same program: the same
+              amount of data is transferred from/to memory, the same number
+              of additions is executed.
+    \end{itemize}
+
+    \vfill
+}
+
+\frame{
+    \frametitle{Is SIMD really faster?}
+
+    \begin{itemize}
+        \pause
+        \item "a vector instruction" doesn't just  mean "a hardware loop"
+        \pause
+        \item vector instructions do have dedicated execution units
+        \pause
+        \item \ldots which perform elementary operations \textbf{in parallel}
+        \pause
+        \item for example on Intel Skylake-X:
+        \pause
+        \item \ldots addition of two 8-bit numbers takes\pause\relax~1 CPU cycle
+        \pause
+        \item \ldots addition of two \textbf{16} x 8-bit vectors takes\pause\relax~1 CPU cycle
+        \pause
+        \item \ldots addition of two \textbf{32} x 8-bit vectors takes\pause\relax~1 CPU cycle
+        \pause
+        \item \ldots addition of two \textbf{64} x 8-bit vectors takes\pause\relax~1 CPU cycle
+        \pause
+        \item Not for all operations such nice scaling is possible
+        \pause
+        \item \ldots but we can expect significant boost over most of regular CPU instructions
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{What is a hardware vector?}
+
+    \begin{itemize}
+        \pause
+        \item In SIMD model, the vectors have \textbf{fixed size}
+        \pause
+        \item The size depends on CPU architectures: usually it is 128 bits, 256 bits or 512 bits
+        \pause
+        \item Hardware \textbf{interprets} these bits as\\
+              1) an array of integers or\\
+              2) an array of floating point numbers
+        \pause
+        \item Some CPU architectures support only integer operations
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Data types}
+
+    For instance a 256-bit vector can be used in a program as a value of type (C/C++ types):
+
+    \begin{itemize}
+        \item \texttt{int8\_t[32]}, \texttt{uint8\_t[32]}
+        \item \texttt{int16\_t[16]}, \texttt{uint16\_t[16]}
+        \item \texttt{int32\_t[8]}, \texttt{uint32\_t[8]}
+        \item \texttt{int64\_t[4]}, \texttt{uint64\_t[4]}
+        \item \texttt{float[8]}
+        \item \texttt{double[4]}
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Existing SIMD implementation}
+
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+
+        cryptic name &
+        vendor &
+        year &
+        vector width [bits] \\
+
+        \hline
+        \hline
+
+        MMX          & Intel  & 1997 & 64 \\ \hline
+        3DNow        & AMD    & 1998 & 64 \\ \hline
+        AltiVec      & many   & 1998 & 128 \\ \hline
+        SSE          & Intel  & 1999 & 128 \\ \hline
+        Neon         & ARM    & 2000 & 128 \\ \hline
+        SSE2         & Intel  & 2001 & 128 \\ \hline
+        SSE3         & Intel  & 2004 & 128 \\ \hline
+        SSSE3        & Intel  & 2006 & 128 \\ \hline
+        SSE4         & Intel  & 2007 & 128 \\ \hline
+        AVX          & Intel  & 2008 & 256 \\ \hline
+        XOP          & AMD    & 2010 & 128 \\ \hline
+        AVX2         & Intel  & 2013 & 256 \\ \hline
+        AVX-512      & Intel  & 2015 & 512 \\ \hline
+        SVE          & ARM    & ???  & 1024-4096 \\ \hline
+    \end{tabular}
+    \end{center}
+}
+
+\frame{
+    \frametitle{Most common SIMD operations}
+
+    \begin{itemize}
+        \pause
+        \item store in memory / load from memory
+        \pause
+        \item addition / subtraction / multiplication / division (only floating-point division)
+        \pause
+        \item comparison ($=$, $\ne$, $<$, $\le$, $>$, $\ge$)
+        \pause
+        \item square root / reciprocal ($1/x$)
+        \pause
+        \item min / max / abolute value / average
+        \pause
+        \item casts between vectors of floating point and integers
+        \pause
+        \item untyped operation on bits (like \texttt{and}, \texttt{xor}, \texttt{or})
+        \pause
+        \item \textbf{shuffle} or \textbf{permute} vector --- change order of elements
+        \pause
+        \item \textbf{blending} two vectors
+        \pause
+        \item \textbf{integer saturated arithmetic}
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Example of shuffle}
+
+    Operation is $c = \textrm{shuffle}(a, b)$
+
+    \begin{center}
+        \include{pictures/simd-shuffle-sample.tex}
+    \end{center}
+}
+
+\frame{
+    \frametitle{Example of shuffle --- reverse}
+
+    Operation is $c = \textrm{shuffle}(a, b)$
+
+    \begin{center}
+        \include{pictures/simd-shuffle-reverse.tex}
+    \end{center}
+}
+
+\frame{
+    \frametitle{Example of shuffle --- broadcast}
+
+    Operation is $c = \textrm{shuffle}(a, b)$
+
+    \begin{center}
+        \include{pictures/simd-shuffle-broadcast.tex}
+    \end{center}
+}
+
+\frame{
+    \frametitle{Example of blend}
+
+    Operation is $c = s\ ?\ a : b$
+
+    \begin{center}
+        \include{pictures/simd-cond.tex}
+    \end{center}
+
+    As a raw bit operations  $c = (s \mathop{\textrm{and}} a) \mathop{\textrm{or}} (\mathop{\textrm{not}} s \mathop{\textrm{and}} b)$
+}
+
+\frame{
+    \frametitle{Integer saturated arithmetic}
+
+    \begin{itemize}
+        \pause
+        \item A unique feature of SIMD
+        \pause
+        \item \ldots but something popular in the DSP world
+        \pause
+        \item Prevents from overflows during integer operations
+        \pause
+        \item \ldots saves min or max value for given type
+        \pause
+        \item \ldots 0 or 255 for 8-bit unsigned integers
+        \pause
+        \item Traditional (modulo) arithmetic:
+        \pause
+        \item $(240 + 100) \mod 256 = 84$
+        \pause
+        \item Saturated arithmetics:
+        \pause
+        \item $\min(240 + 100, 255) = \min(340, 255) = 255$
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{SIMD instructions in real life}
+
+    How about adding two vector of arbitrary size?
+
+    \pause
+    \begin{adjustbox}{max width=10cm}
+        \lstinputlisting[language=C++,numbers=left]{vector-add.cpp}
+    \end{adjustbox}
+
+    \vfill
+
+    \pause
+    Function \texttt{vector\_add} can rewritten (\emph{vectorized}) as:
+
+    \vfill
+
+    \begin{adjustbox}{max width=10cm}
+    \lstinputlisting[language=C++,numbers=left]{vector-add-simd.cpp}
+    \end{adjustbox}
+
+    \vfill
+}
+
+\frame{
+    \frametitle{Is it really better?}
+
+    \begin{adjustbox}{max width=8cm}
+    \lstinputlisting[language=C++,numbers=left]{vector-add-simd.cpp}
+    \end{adjustbox}
+
+    \vfill
+
+    \begin{itemize}
+        \pause
+        \item Now it is more complicated, as there are \textbf{two loops}
+        \pause
+        \item We need to know how these magic \texttt{vector\_foo} functions
+              work to reason about the code
+        \pause
+        \item The additional loop processes the \textbf{tail} of input --- it
+              will execute just $0 \ldots 7$ iterations, but has to (re)implement
+              whole logic of the main loop
+        \pause
+        \item What if we wanted to port it for another CPU, which is capable
+              to process 16, 32 or 64 numbers?
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{But SIMD is faster!}
+
+    \pause
+    More complex code pays off in peformance boost
+
+    {\tiny Results gathered from several articles from my website}
+
+
+    \begin{itemize}
+        % http://0x80.pl/notesen/2018-10-24-sse-sumbytes.html
+        \pause
+        \item summing bytes: \hfill
+              4 x faster
+
+        % http://0x80.pl/notesen/2018-04-11-simd-is-sorted.html
+        \pause
+        \item \texttt{std::is\_sorted}: \hfill
+              8 x faster
+
+        % http://0x80.pl/notesen/2016-01-12-sse-base64-encoding.html
+        \pause
+        \item base64 encoding: \hfill
+              4 x faster
+
+        % http://0x80.pl/notesen/2016-01-17-sse-base64-decoding.html#experiments-update
+        \pause
+        \item base64 decoding: \hfill
+              2 x faster
+
+        % http://0x80.pl/articles/sse-popcount.html
+        \pause
+        \item population count: \hfill
+              5 x faster
+
+        % http://0x80.pl/articles/sse4-alphaover.html
+        \pause
+        \item images mixing: \hfill
+              7 x faster
+
+        % http://0x80.pl/notesen/2018-05-13-avx512-jpeg-zigzag-transform.html
+        \pause
+        \item JPEG zig-zag transformation: \hfill
+              7 x faster
+
+        % http://0x80.pl/articles/sse-pix16to32bpp.html
+        \pause
+        \item pixel format conversions: \hfill
+              5 x faster
+
+        % http://0x80.pl/articles/reverse-array-of-bytes.html
+        \pause
+        \item reverse table: \hfill
+              3 x faster
+
+        % http://0x80.pl/notesen/2018-10-03-simd-index-of-min.html
+        \pause
+        \item finding index of min elemment: \hfill
+              14 x faster
+    \end{itemize}
+}
+
+
+\frame{
+    \frametitle{SIMD in software}
+
+    \begin{itemize}
+        \pause
+        \item Currently no programming languages directly support SIMD data types
+        \pause
+        \item Exception is C extension \textbf{ispc} \href{https://ispc.github.io/}
+        \pause
+        \item However, compilers can \textbf{autovectorize} loops --- they do
+              similar transformation as we did to \texttt{vector\_add}
+        \pause
+        \item Autovectorization is not as smart as human, but is decent
+        \pause
+        \item SIMD instructions are available for programmers as so called
+              \textbf{intrinsic} functions (in our examples \texttt{vector\_foo})
+        \pause
+        \item Intrinsic functions are translated by compilers into a predefined
+              sequence of CPU instructions, often just one
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Takeaways}
+
+    \begin{itemize}
+        \pause
+        \item SIMD instructions are ubiquites
+        \pause
+        \item SIMD can give significant speedup
+        \pause
+        \item \ldots but doesn't make program magically faster
+        \pause
+        \item SIMD instructions are quite hard to master by programmers
+        \pause
+        \item \ldots mental model is different
+        \pause
+        \item Luckily compilers are getting better in autovectorization
+    \end{itemize}
+}
+
+\end{document}
+
+\frame{
+    \frametitle{}
+
+    \begin{itemize}
+        \pause
+        \item
+        \pause
+        \item
+        \pause
+        \item
+        \pause
+        \item
+        \pause
+        \item
+        \pause
+        \item
+        \pause
+        \item
+    \end{itemize}
+}
+
+\end{document}
