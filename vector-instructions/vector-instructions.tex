@@ -388,6 +388,37 @@
 }
 
 \frame{
+    \frametitle{Saturated addition example --- increase image brightness}
+
+    \newbox\original
+    \setbox\original\hbox{\includegraphics[scale=0.25]{cat_grayscale}}
+
+    \newbox\addwrap
+    \setbox\addwrap\hbox{\includegraphics[scale=0.25]{cat_add_wrap}}
+
+    \newbox\addsat
+    \setbox\addsat\hbox{\includegraphics[scale=0.25]{cat_add_sat}}
+
+    \pause
+    Wrap-around arithmetic
+
+    \begin{center}
+        \usebox\original
+        \vbox to \ht\original {\vfill \hbox {\huge\ + 180 =\ }\vfill}
+        \usebox\addwrap
+    \end{center}
+
+    \pause
+    Saturated arithmetic
+
+    \begin{center}
+        \usebox\original
+        \vbox to \ht\original {\vfill \hbox {\huge\ + 180 =\ }\vfill}
+        \usebox\addsat
+    \end{center}
+}
+
+\frame{
     \frametitle{SIMD instructions in real life}
 
     How about adding two vector of arbitrary size?
