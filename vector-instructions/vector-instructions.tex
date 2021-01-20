@@ -22,7 +22,7 @@
 
     \begin{itemize}
         \pause
-        \item What are \textbf{vector instructions} or \textbf{SIMD instructions}
+        \item What are \textbf{vector instructions}/\textbf{SIMD instructions}
         \pause
         \item Why they are important
         \pause
@@ -135,7 +135,7 @@
         \item In commodity hardware used in PC, laptops, phones the first vector instructions
               appeared in late 1990's
         \pause
-        \item GPUs usually have SIMD execution units
+        \item GPUs usually have vector execution units
     \end{itemize}
 }
 
@@ -146,7 +146,9 @@
         \pause
         \item James Flynn in 1970's introduced rough classification of \emph{computer systems}
         \pause
-        \item A computer can execute either \textbf{single} or \textbf{multiple} instructions at once
+        \item A computer can have \textbf{single} or \textbf{multiple} CPUs
+        \pause
+        \item \ldots thus can execute single/multiple instructions at once
         \pause
         \item An instruction can deal with either \textbf{single} or \textbf{multiple} data at once
         \pause
@@ -159,7 +161,7 @@
 }
 
 \frame{
-    \frametitle{How does vector instruction work then? --- part 1}
+    \frametitle{How vector instructions work? --- part 1}
 
     Suppose vectors have 8 elements
 
@@ -171,7 +173,7 @@
 }
 
 \frame{
-    \frametitle{How does vector instruction work then? --- part 2}
+    \frametitle{How vector instructions work? --- part 2}
 
     How it looks like in code:
     \pause
@@ -248,7 +250,7 @@
 \frame{
     \frametitle{Data types}
 
-    For instance a 256-bit vector can be used in a program as a value of type (C/C++ types):
+    For instance a 256-bit vector can be used in a program as the following vectors {\tiny (C/C++ types)}:
 
     \begin{itemize}
         \item \texttt{int8\_t[32]}, \texttt{uint8\_t[32]}
@@ -261,7 +263,7 @@
 }
 
 \frame{
-    \frametitle{Existing SIMD implementation}
+    \frametitle{Existing SIMD implementations}
 
     \begin{center}
     \begin{tabular}{|c|c|c|c|}
@@ -314,9 +316,9 @@
         \pause
         \item \textbf{shuffle} or \textbf{permute} vector --- change order of elements
         \pause
-        \item \textbf{blending} two vectors
+        \item \textbf{blending} two vectors (ternary operation \texttt{s ? a : b})
         \pause
-        \item \textbf{integer saturated arithmetic}
+        \item integer addition / subtraction / type casts using \textbf{saturated arithmetic}
     \end{itemize}
 }
 
@@ -377,13 +379,15 @@
         \pause
         \item \ldots 0 or 255 for 8-bit unsigned integers
         \pause
-        \item Traditional (modulo) arithmetic:
+        \item Wrap-around (modulo) arithmetic:
         \pause
         \item $(240 + 100) \mod 256 = 84$
         \pause
         \item Saturated arithmetics:
         \pause
         \item $\min(240 + 100, 255) = \min(340, 255) = 255$
+        \pause
+        \item Saturated arithmetic is as fast as wrap-around one
     \end{itemize}
 }
 
@@ -421,7 +425,7 @@
 \frame{
     \frametitle{SIMD instructions in real life}
 
-    How about adding two vector of arbitrary size?
+    How about adding two vectors of arbitrary size?
 
     \pause
     \begin{adjustbox}{max width=10cm}
@@ -524,7 +528,7 @@
 
         % http://0x80.pl/notesen/2018-10-03-simd-index-of-min.html
         \pause
-        \item finding index of min elemment: \hfill
+        \item finding index of min element: \hfill
               14 x faster
     \end{itemize}
 }
@@ -537,7 +541,8 @@
         \pause
         \item Currently no programming languages directly support SIMD data types
         \pause
-        \item Exception is C extension \textbf{ispc} \href{https://ispc.github.io/}
+        \item Exception is C extension \textbf{ispc}
+              (\href{https://ispc.github.io/}{ispc.github.io})
         \pause
         \item However, compilers can \textbf{autovectorize} loops --- they do
               similar transformation as we did to \texttt{vector\_add}
@@ -557,15 +562,15 @@
 
     \begin{itemize}
         \pause
-        \item SIMD instructions are ubiquites
+        \item SIMD instructions are ubiquitous
         \pause
         \item SIMD can give significant speedup
         \pause
-        \item \ldots but doesn't make program magically faster
+        \item \ldots but doesn't make a program magically faster
         \pause
         \item SIMD instructions are quite hard to master by programmers
         \pause
-        \item \ldots mental model is different
+        \item \ldots out mental model is different
         \pause
         \item Luckily compilers are getting better in autovectorization
     \end{itemize}
@@ -593,5 +598,3 @@
         \item
     \end{itemize}
 }
-
-\end{document}
