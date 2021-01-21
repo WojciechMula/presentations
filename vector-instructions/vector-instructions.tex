@@ -535,6 +535,17 @@
     \end{itemize}
 }
 
+\frame{
+    \frametitle{More realistic example --- signal mixing}
+
+    Following vector code mixes two signals (image, sound) using linear interpolation
+
+    $$c = a \cdot p + b \cdot (1 - p), p \in [0, 1]$$
+
+    \begin{adjustbox}{max width=11cm}
+    \lstinputlisting[language=C++,numbers=left]{vector-lerp-simd.cpp}
+    \end{adjustbox}
+}
 
 \frame{
     \frametitle{SIMD in software}
