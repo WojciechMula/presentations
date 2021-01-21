@@ -10,5 +10,5 @@ vector-instructions-plain.tex: vector-instructions.tex
 vector-instructions-plain.pdf: vector-instructions-plain.tex $(DEPS)
 	pdflatex vector-instructions-plain.tex
 
-images: cat_grayscale.png scripts/saturated_add.py
+cat_add_sat.png cat_add_wrap.png: cat_grayscale.png scripts/saturated_add.py
 	scripts/saturated_add.py cat_grayscale.png 180
