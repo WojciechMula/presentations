@@ -536,6 +536,31 @@
 }
 
 \frame{
+    \frametitle{When does SIMD shine?}
+
+    \begin{itemize}
+        \pause
+        \item SIMD fits well for arithmetic-insensitive problems
+        \pause
+        \item \ldots dead simple calculations
+        \pause
+        \item \ldots no \texttt{if} / \texttt{switch}
+        \pause
+        \item \ldots no data dependencies between iterations
+        \pause
+        \item SIMD requires regular data access
+        \pause
+        \item \ldots preferably sequential access
+        \pause
+        \item \ldots no pointers / computed indices
+        \pause
+        \item \ldots no calls to external functions
+        \pause
+        \item SIMD requires designed data structures to use full power
+    \end{itemize}
+}
+
+\frame{
     \frametitle{More realistic example --- signal mixing}
 
     Following vector code mixes two signals (image, sound) using linear interpolation
@@ -548,26 +573,44 @@
 }
 
 \frame{
-    \frametitle{SIMD in software}
+    \frametitle{SIMD for programmers}
 
     \begin{itemize}
         \pause
         \item Currently no programming languages directly support SIMD data types
         \pause
-        \item Exception is C extension \textbf{ispc}
+        \item Exception is a C extension \textbf{ispc}
               (\href{https://ispc.github.io/}{ispc.github.io})
-        \pause
-        \item However, compilers can \textbf{autovectorize} loops --- they do
-              similar transformation as we did to \texttt{vector\_add}
-        \pause
-        \item Autovectorization is not as smart as human, but is decent
         \pause
         \item SIMD instructions are available for programmers as so called
               \textbf{intrinsic} functions (in our examples \texttt{vector\_foo})
         \pause
-        \item Intrinsic functions are translated by compilers into a predefined
+        \item Intrinsic functions are translated by compilers into a~predefined
               sequence of CPU instructions, often just one
+        \pause
+        \item There are attempts to hide multitude of SIMD flavours
+              behind some generic API, may be worth to check out.
+        \pause
+        \item Compilers can \textbf{autovectorize} loops --- they do
+              similar transformation as we did to \texttt{vector\_add}
+        \pause
+        \item Autovectorization is not as smart as human, but is decent
     \end{itemize}
+}
+
+\frame{
+    \frametitle{Signal mixing in practise}
+
+    This is actual C++ code for signal mixing which uses Intel intrinsics
+    functions for AVX2 extension (full list on
+    \href{https://software.intel.com/sites/landingpage/IntrinsicsGuide/}{Intrinsics Guide})
+
+    \begin{adjustbox}{max width=10cm}
+    \lstinputlisting[language=C++,numbers=left]{vector-lerp-avx2.cpp}
+    \end{adjustbox}
+
+    \pause
+    It compiles! \texttt{gcc -mavx2 -c vector-lerp-avx2.cpp}
 }
 
 \frame{
@@ -585,7 +628,12 @@
         \pause
         \item \ldots our mental model is different
         \pause
+        \item \ldots training helps
+        \pause
         \item Luckily compilers are getting better in autovectorization
+        \pause
+        \item More and more software libraries use SIMD instructions,
+              we can benefit from it without changing our code
     \end{itemize}
 }
 
