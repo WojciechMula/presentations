@@ -247,6 +247,9 @@
               1) an array of integers or\\
               2) an array of floating point numbers
         \pause
+        \item Unlike regular CPUs there is no distinction between integer and
+              floating-point registers --- there are just "vector/SIMD registers"
+        \pause
         \item Some CPU architectures support only integer operations
     \end{itemize}
 }
@@ -254,7 +257,9 @@
 \frame{
     \frametitle{Hardware vs Software vectors}
 
-    For instance a 256-bit vector can be used in a program as the following vectors {\tiny (C/C++ types)}:
+    For instance a 256-bit vector can be used in a program as the following vectors {\tiny (C/C++ types)}
+
+    \vfill
 
     \begin{itemize}
         \item \texttt{int8\_t[32]}, \texttt{uint8\_t[32]}
@@ -264,6 +269,8 @@
         \item \texttt{float[8]}
         \item \texttt{double[4]}
     \end{itemize}
+
+    \vfill
 }
 
 \frame{
