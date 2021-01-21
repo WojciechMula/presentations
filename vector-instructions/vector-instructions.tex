@@ -6,6 +6,8 @@
 \usepackage{tikz}
 \usetikzlibrary{chains,arrows,automata,decorations.markings,positioning,calc,decorations.pathreplacing,patterns}
 
+\setbeamertemplate{footline}[frame number]
+
 \begin{document}
 
 \frame{
@@ -186,13 +188,13 @@
 
     \begin{itemize}
         \pause
+        \item In traditional approach we had 32 instructions
+
+        \pause
         \item \texttt{vector\_foo} represents a \textbf{single CPU instruction}
 
         \pause
         \item Only four instructions are executed in total
-
-        \pause
-        \item In traditional approach we had 32 instructions
 
         \pause
         \item Both approaches perform exactly the same program: the same
@@ -248,7 +250,7 @@
 }
 
 \frame{
-    \frametitle{Data types}
+    \frametitle{Hardware vs Software vectors}
 
     For instance a 256-bit vector can be used in a program as the following vectors {\tiny (C/C++ types)}:
 
@@ -323,7 +325,7 @@
 }
 
 \frame{
-    \frametitle{Example of shuffle}
+    \frametitle{Example of shuffle --- arbitrary order of elements}
 
     Operation is $c = \textrm{shuffle}(a, b)$
 
@@ -381,11 +383,11 @@
         \pause
         \item Wrap-around (modulo) arithmetic:
         \pause
-        \item $(240 + 100) \mod 256 = 84$
+        \item \hspace{0.5cm} $(240 + 100) \mod 256 = 84$
         \pause
         \item Saturated arithmetics:
         \pause
-        \item $\min(240 + 100, 255) = \min(340, 255) = 255$
+        \item \hspace{0.5cm} $\min(240 + 100, 255) = \min(340, 255) = 255$
         \pause
         \item Saturated arithmetic is as fast as wrap-around one
     \end{itemize}
@@ -425,7 +427,7 @@
 \frame{
     \frametitle{SIMD instructions in real life}
 
-    How about adding two vectors of arbitrary size?
+    How about adding two vectors of arbitrary size?  ($c = a + b$)
 
     \pause
     \begin{adjustbox}{max width=10cm}
@@ -481,29 +483,34 @@
 
 
     \begin{itemize}
+        % http://0x80.pl/notesen/2016-01-17-sse-base64-decoding.html#experiments-update
+        \pause
+        \item base64 decoding: \hfill
+              2 x faster
+
+        % http://0x80.pl/articles/reverse-array-of-bytes.html
+        \pause
+        \item reverse table: \hfill
+              3 x faster
+
         % http://0x80.pl/notesen/2018-10-24-sse-sumbytes.html
         \pause
         \item summing bytes: \hfill
               4 x faster
-
-        % http://0x80.pl/notesen/2018-04-11-simd-is-sorted.html
-        \pause
-        \item \texttt{std::is\_sorted}: \hfill
-              8 x faster
 
         % http://0x80.pl/notesen/2016-01-12-sse-base64-encoding.html
         \pause
         \item base64 encoding: \hfill
               4 x faster
 
-        % http://0x80.pl/notesen/2016-01-17-sse-base64-decoding.html#experiments-update
-        \pause
-        \item base64 decoding: \hfill
-              2 x faster
-
         % http://0x80.pl/articles/sse-popcount.html
         \pause
         \item population count: \hfill
+              5 x faster
+
+        % http://0x80.pl/articles/sse-pix16to32bpp.html
+        \pause
+        \item pixel format conversions: \hfill
               5 x faster
 
         % http://0x80.pl/articles/sse4-alphaover.html
@@ -516,15 +523,10 @@
         \item JPEG zig-zag transformation: \hfill
               7 x faster
 
-        % http://0x80.pl/articles/sse-pix16to32bpp.html
+        % http://0x80.pl/notesen/2018-04-11-simd-is-sorted.html
         \pause
-        \item pixel format conversions: \hfill
-              5 x faster
-
-        % http://0x80.pl/articles/reverse-array-of-bytes.html
-        \pause
-        \item reverse table: \hfill
-              3 x faster
+        \item \texttt{std::is\_sorted}: \hfill
+              8 x faster
 
         % http://0x80.pl/notesen/2018-10-03-simd-index-of-min.html
         \pause
