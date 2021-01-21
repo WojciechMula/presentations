@@ -7,5 +7,5 @@ void vector_add(float* a, float* b, float* c, size_t N) {
     }
 
     for (size_t i=(N / 8) * 8; i < N; i++)
-        result[i] = vec1[i] + vec2[i];
+        c[i] = a[i] + b[i];
 }

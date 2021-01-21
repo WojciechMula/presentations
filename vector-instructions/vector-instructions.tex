@@ -18,13 +18,13 @@
     \vfill
 
     \pause
-    What we cover?
+    What do we cover?
 
     \begin{itemize}
         \pause
         \item What are \textbf{vector instructions}/\textbf{SIMD instructions}
         \pause
-        \item Why they are important
+        \item Why are they important
         \pause
         \item How do they work
         \pause
@@ -55,7 +55,7 @@
     \frametitle{What is a vector?}
 
     \begin{itemize}
-        \item In the maths a \textbf{vector} is a sequence of numbers (\emph{scalars})
+        \item In maths a \textbf{vector} is a sequence of numbers (\emph{scalars})
         \pause
         \item The IT world uses the term \textbf{array} for vectors
         \pause
@@ -70,7 +70,7 @@
 }
 
 \frame{
-    \frametitle{How we would add two vectors? -- part 1}
+    \frametitle{How would we add two vectors? -- part 1}
 
     Suppose we have two vectors of size 8:
 
@@ -87,7 +87,7 @@
 }
 
 \frame{
-    \frametitle{How we would add two vectors? -- part 3}
+    \frametitle{How would we add two vectors? -- part 3}
 
     A program that performs vector addition is quite simple:
     \lstinputlisting[language=C++]{vector-add-naive.cpp}
@@ -98,7 +98,7 @@
 }
 
 \frame{
-    \frametitle{How we would add two vectors? -- part 4}
+    \frametitle{How would we add two vectors? -- part 4}
 
     \lstinputlisting[language=C++]{vector-add-loop.cpp}
 
@@ -189,13 +189,13 @@
         \item \texttt{vector\_foo} represents a \textbf{single CPU instruction}
 
         \pause
-        \item Here we have to execute four instructions
+        \item Only four instructions are executed in total
 
         \pause
         \item In traditional approach we had 32 instructions
 
         \pause
-        \item Both approaches performs exactly the same program: the same
+        \item Both approaches perform exactly the same program: the same
               amount of data is transferred from/to memory, the same number
               of additions is executed.
     \end{itemize}
@@ -235,7 +235,7 @@
 
     \begin{itemize}
         \pause
-        \item In SIMD model, the vectors have \textbf{fixed size}
+        \item In SIMD model, the hardware vectors have \textbf{fixed size}
         \pause
         \item The size depends on CPU architectures: usually it is 128 bits, 256 bits or 512 bits
         \pause
@@ -570,7 +570,7 @@
         \pause
         \item SIMD instructions are quite hard to master by programmers
         \pause
-        \item \ldots out mental model is different
+        \item \ldots our mental model is different
         \pause
         \item Luckily compilers are getting better in autovectorization
     \end{itemize}
