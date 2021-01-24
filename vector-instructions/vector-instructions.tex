@@ -32,7 +32,7 @@
         \pause
         \item How do they work
         \pause
-        \item What are good for
+        \item What are they good for
     \end{itemize}
 
     \vfill
@@ -144,6 +144,18 @@
 }
 
 \frame{
+    \frametitle{How vector operations work?}
+
+    Suppose vectors have 8 elements
+
+    Operation is $c = a + b$
+
+    \begin{center}
+        \include{pictures/simd-vertop.tex}
+    \end{center}
+}
+
+\frame{
     \frametitle{What is SIMD?}
 
     \begin{itemize}
@@ -165,21 +177,8 @@
 }
 
 \frame{
-    \frametitle{How vector instructions work? --- part 1}
+    \frametitle{How it looks like in code}
 
-    Suppose vectors have 8 elements
-
-    Operation is $c = a + b$
-
-    \begin{center}
-        \include{pictures/simd-vertop.tex}
-    \end{center}
-}
-
-\frame{
-    \frametitle{How vector instructions work? --- part 2}
-
-    How it looks like in code:
     \pause
     \vfill
     \begin{adjustbox}{max width=10cm}
@@ -190,18 +189,22 @@
 
     \begin{itemize}
         \pause
+        \item Both approaches (slide 6) perform exactly the same program:
+              the same amount of data is transferred from/to memory,
+              the same number of additions is executed
+
+        \pause
         \item In traditional approach we had 32 instructions
 
         \pause
-        \item \texttt{vector\_foo} represents a \textbf{single CPU instruction}
+        \item \ldots \texttt{vector\_foo} represents a \textbf{single CPU instruction}
 
         \pause
         \item Only four instructions are executed in total
 
         \pause
-        \item Both approaches perform exactly the same program: the same
-              amount of data is transferred from/to memory, the same number
-              of additions is executed
+        \item What we pay for are \textbf{instuctions}
+
     \end{itemize}
 
     \vfill
@@ -255,7 +258,7 @@
 }
 
 \frame{
-    \frametitle{Hardware vs Software vectors}
+    \frametitle{Hardware vs software vectors}
 
     For instance a 256-bit vector can be used in a program as the following vectors {\tiny (C/C++ types)}
 
