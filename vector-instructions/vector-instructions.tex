@@ -576,7 +576,7 @@
         \pause
         \item SIMD fits well for arithmetic-insensitive problems
         \pause
-        \item \ldots dead simple calculations
+        \item \ldots dead simple calculations\pause\ --- "simple" is unspecified
         \pause
         \item \ldots no \texttt{if} / \texttt{switch}
         \pause
@@ -591,6 +591,9 @@
         \item \ldots no calls to external functions
         \pause
         \item SIMD requires designed data structures to use full power
+        \pause
+        \item \ldots typical example: instead of a single array of records
+              use separate array for each record's field
     \end{itemize}
 }
 
@@ -611,10 +614,15 @@
 
     \begin{itemize}
         \pause
-        \item Currently no programming languages directly support SIMD data types
+        \item Currently C/C++ do not directly support SIMD data types
         \pause
-        \item Exception is a C extension \textbf{ispc}
+        \item \ldots exception is a C extension \textbf{ispc}
               (\href{https://ispc.github.io/}{ispc.github.io})
+        \pause
+        % https://developer.apple.com/documentation/swift/simd
+        % https://blog.rust-lang.org/2018/06/21/Rust-1.27.html
+        % https://docs.microsoft.com/en-us/dotnet/standard/simd
+        \item \ldots Swift, Rust and C\# have builtin support; Java -- depends on JIT
         \pause
         \item SIMD instructions are available for programmers as so called
               \textbf{intrinsic} functions (in our examples \texttt{vector\_foo})
