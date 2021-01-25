@@ -284,6 +284,7 @@
 \frame{
     \frametitle{Existing SIMD implementations}
 
+    \small
     \begin{center}
     \begin{tabular}{|c|c|c|c|}
         \hline
@@ -296,18 +297,34 @@
         \hline
         \hline
 
-        MMX          & Intel  & 1997 & 64 \\ \hline
-        3DNow        & AMD    & 1998 & 64 \\ \hline
+        % Brief SIMD history in the ARM world
+        % https://static.docs.arm.com/den0018/a/DEN0018A_neon_programmers_guide_en.pdf
+        %   ARMv6 - 32-bit SIMD
+        %   ARMv7 - NEON 32-bit (Cortex-A5) or 64-bit (Cortex-A12)[1]
+        %
+        % ARMv6 -- 2002-2005 [2]
+        % Cortex-A5 launched in 2011 [3]
+        % Cortex-A12 launched in 2014 [4]
+
+        % [1] https://en.wikipedia.org/wiki/List_of_ARM_microarchitectures
+        % [2] https://en.wikipedia.org/wiki/ARM11
+        % [3] https://en.wikipedia.org/wiki/ARM_Cortex-A5
+        % [4] https://en.wikipedia.org/wiki/ARM_Cortex-A12
+
+        MMX          & Intel  & 1997 & 64  \\ \hline
+        3DNow        & AMD    & 1998 & 64  \\ \hline
         AltiVec      & many   & 1998 & 128 \\ \hline
         SSE          & Intel  & 1999 & 128 \\ \hline
-        Neon         & ARM    & 2000 & 128 \\ \hline
+        ---          & ARM    & 2002 & 32  \\ \hline
         SSE2         & Intel  & 2001 & 128 \\ \hline
         SSE3         & Intel  & 2004 & 128 \\ \hline
         SSSE3        & Intel  & 2006 & 128 \\ \hline
         SSE4         & Intel  & 2007 & 128 \\ \hline
         AVX          & Intel  & 2008 & 256 \\ \hline
         XOP          & AMD    & 2010 & 128 \\ \hline
+        Neon         & ARM    & 2011 & 64  \\ \hline
         AVX2         & Intel  & 2013 & 256 \\ \hline
+        Neon         & ARM    & 2014 & 128 \\ \hline
         AVX-512      & Intel  & 2015 & 512 \\ \hline
         SVE          & ARM    & ???  & 1024-4096 \\ \hline
     \end{tabular}
