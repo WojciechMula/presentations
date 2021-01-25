@@ -139,7 +139,12 @@
         \item In commodity hardware used in PC, laptops, phones the first vector instructions
               appeared in late 1990's
         \pause
-        \item GPUs usually have vector execution units
+        \item GPUs usually have SIMD execution units
+        \pause
+        % https://www.sigarch.org/simd-instructions-considered-harmful/
+        \item Vector instructions are not the only mean of speeding up vector
+              calculation, there are CPUs having \emph{vector architectures}
+              built entirely around the concept of arbitrary length vectors
     \end{itemize}
 }
 
