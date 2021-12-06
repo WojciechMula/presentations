@@ -1,0 +1,235 @@
+\documentclass{beamer}
+
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{chains,arrows,automata,decorations.markings,positioning,calc,decorations.pathreplacing,patterns}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+
+\frame{
+    \begin{center}
+        \textbf{\huge Parquet file format --- brief introduction}
+
+        \vspace{\baselineskip}
+
+        Wojciech Muła, \href{http://0x80.pl}{0x80.pl} December 2021
+    \end{center}
+
+    \vfill
+
+    Major features:
+    
+    \begin{itemize}
+        \item Fixed data schema
+        
+        \item Columnar storage (by design)
+
+        \item Ability to split multiple rows into "row groups" (file creator decision)
+
+        \item Designed to parallel processing: at the level of row groups and columns
+
+        \item Per-column \& per-row group data compression
+
+        \item Rich data types: numbers, strings, timestamps, bool, arrays, structs, dictionaries, unions, etc.
+
+        \item Uses \textbf{Dremel} encoding to describe nested data structures
+    \end{itemize}
+}
+
+
+\frame{
+    \frametitle{Algorithm backing the format}
+
+    \begin{itemize}
+        
+        \item \textbf{Dremel} invented by Google
+        
+        \item Assigns values only to \texttt{leaves} of schema tree
+        
+        \item ... inner nodes may be only set to \texttt{null}
+        
+        \item Allow to repeat any part of schema subtree
+        
+        \item \ldots but does not support arrays directly
+    \end{itemize}
+
+    \vfill
+    Sample schema with five columns
+
+    \begin{adjustbox}{max width=7cm}
+        \lstinputlisting{schema.txt}
+    \end{adjustbox}
+}
+
+\frame{
+    \frametitle{Column data --- overview}
+
+    Single column data consists \textbf{two} or \textbf{three} arrays of values
+
+    \begin{itemize}
+        
+        \item Always present \textbf{definition levels} --- which part of path is "defined"
+        
+        \item Optional \textbf{repetition levels} --- at which part of schema we repeat values
+        
+        \item \textbf{Actual} data, present if there are not-null values in column
+
+        \item Definition \& repetition levels are sufficient to reconstruct arbitrary record structure
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Column data --- levels}
+
+    \begin{itemize}
+        \item Definition and repetition levels are arrays of unsigned numbers
+
+        \item Their sizes are \texttt{equal} to the number of rows
+
+        \item Repetition level is present only if some part of path may repeats
+
+        \item \ldots this property is set in the data schema
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Column data --- definition levels}
+
+    Let's assume path \texttt{customer.location.city}. Other possible paths
+    are \texttt{customer.location} and \texttt{customer}.
+    \vfill
+
+    \begin{adjustbox}{max width=6cm}
+        \lstinputlisting{deflevel.txt}
+    \end{adjustbox}
+
+    \vfill
+    Corresponding JSON
+
+    \begin{adjustbox}{max width=8cm}
+        \lstinputlisting{deflevel.json}
+    \end{adjustbox}
+}
+
+\frame{
+    \frametitle{Column data --- definition levels continued}
+
+    \begin{itemize}
+        
+        \item Definition level equals to "max definition level" means the values is present
+        
+        \item ... in the example we have only two values in the data array
+        
+        \item Definition level less than max says at which part of path we set \texttt{null}
+        
+        \item It's easy to do queries like "SELECT COUNT(*) ... WHERE column IS NOT NULL"
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Column data --- repetition levels}
+
+    \begin{itemize}
+        
+        \item similarly to definition level --- decides which part of path repeats
+        
+        \item if value is defined it means "append" to the tree
+
+        \item ... it doesn't apply to JSON, XML is better
+    \end{itemize}
+
+    The same definition levels, but different repetition levels
+
+    \begin{adjustbox}{max width=5cm}
+        \lstinputlisting{replevel1.txt}
+    \end{adjustbox}
+
+    \begin{adjustbox}{max width=5cm}
+        \lstinputlisting{replevel2.txt}
+    \end{adjustbox}
+}
+
+\frame{
+    \frametitle{Parquet format --- part 1}
+
+    \begin{itemize}
+
+        \item Parquet uses the Dremel algorithm underneath
+        
+        \item It efficiently encodes definition and repetition levels (RLE, compression)
+        
+        \item ... but exposes them as plain arrays of \texttt{uint16}
+        
+        \item Parquet uses seven physical types:
+            \texttt{boolean},
+            \texttt{int32},
+            \texttt{int64}h
+            \texttt{float32},
+            \texttt{float64},
+            \texttt{variable-length bytes},
+            \texttt{fixed-length bytes}
+
+        \item It may collect some statistics regarding the column, like: nulls count, distinct count, min value, max value
+
+        \item Columnar data is usually compressed
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Parquet format --- part 2}
+
+    \begin{itemize}
+        
+        \item Physical types are mapped into logical types, like UTF-8 strings, timestamps, date time, decimal
+        
+        \item Logical types are also complex ones: structures, arrays, maps, unions, dictionaries
+        
+        \item Arrays can't be directly represented in Dremel algorithm
+        
+        \item ... as it lets repeat only "key-value" pairs
+        
+        \item ... plain arrays are done by adding artificial nodes to schema and then process them in a special way
+
+        \item Unions and dictionaries are data types designed for reduce memory usage
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Further reading}
+
+    \begin{itemize}
+        
+        \item \href{https://github.com/apache/parquet-format}{Parquet format} --- a lot of details: data layout, used encodings, design considerations, etc.
+        
+        \item \href{https://blog.twitter.com/engineering/en_us/a/2013/dremel-made-simple-with-parquet}{Dremel made simple with Parquet} --- detailed overview of interpretation definition and repetition levels
+        
+        \item \href{https://research.google/pubs/pub36632/}{Dremel: Interactive Analysis of Web-Scale Datasets} -- the original paper
+    \end{itemize}
+}
+
+\end{document}
+
+\frame{
+    \frametitle{}
+
+    \begin{itemize}
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+    \end{itemize}
+}

@@ -1,0 +1,11 @@
+    customer
+    +- id        --- customer.id
+    +- location
+    |  + city    --- customer.location.city
+    |  + country --- customer.location.country
+    |
+    +- name
+       |
+       + first   -- customer.name.first
+       + last    -- customer.name.last
+

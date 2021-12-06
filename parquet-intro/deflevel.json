@@ -1,0 +1,5 @@
+{"customer": null}
+{"customer": {"location": {"city": "London"}}}
+{"customer": {"location": null}}
+{"customer": {"location": {"city": "New York"}}}
+{"customer": {"location": {"city": null}}}

@@ -1,0 +1,6 @@
+<customer>
+    <location>
+        <city>London</city>
+        <city>New York</city>
+    </location>
+</customer>
