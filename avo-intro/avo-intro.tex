@@ -1,0 +1,160 @@
+\documentclass{beamer}
+
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{chains,arrows,automata,decorations.markings,positioning,calc,decorations.pathreplacing,patterns}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+
+\frame{
+    \begin{center}
+        \textbf{\huge avo --- "Generate x86 Assembly with Go"}
+
+        \vspace{\baselineskip}
+
+        Wojciech Muła, \href{http://0x80.pl}{0x80.pl} April 2022
+    \end{center}
+
+    \vfill
+
+    Project \href{https://github.com/mmcloughlin/avo}{avo} highlights:
+    
+    \begin{itemize}
+        \item A Go program generates assembly files
+
+        \item The generator takes care of register allocation
+
+        \item \ldots\ but we can use explicit hardware registers (for instance \texttt{CX} for shift amounts)
+
+        \item Takes care of proper accesing to structures
+
+        \item \ldots\ with hand-written assembly we need \texttt{go vet -asmdecl}
+
+        \item Can generate Go stub files
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Major modules --- 1/3}
+
+    \begin{itemize}
+        
+        \item \texttt{avo/build} --- all instructions, stack allocation, program comments, virtual registers:
+        
+        \item \ldots\ \texttt{GP64()} --- 64-bit GPR
+        
+        \item \ldots\ \texttt{GP64().As32()} --- the lower 32 bits of GPR
+
+        \item \ldots\ \texttt{GP64().As16()} --- the lower 16 bits of GPR
+
+        \item \ldots\ \texttt{GP64().As8()} --- the lower 8 bits of GPR
+
+        \item \ldots\ \texttt{GP64().As8H()} --- the higher 8 bits of GPR (like \texttt{AH}, not always available)
+        
+        \item \ldots\ \texttt{XMM()} --- SSE register
+
+        \item \ldots\ \texttt{YMM()} --- AVX register
+
+        \item \ldots\ \texttt{ZMM()} --- ZMM register
+        
+        \item \ldots\ \texttt{x := AllocLocal(8)}
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Major modules --- 2/3}
+
+    \begin{itemize}
+        
+        \item \texttt{avo/operand} --- labels, immediate types, memory address
+        
+        \item \ldots\ \texttt{Label("name")} --- declare label
+        
+        \item \ldots\ \texttt{JMP(LabelRef("name"))} --- jump to label
+        
+        \item \ldots\ \texttt{ADDQ(U8(42), reg)} --- \texttt{U8}, \texttt{U16}, \texttt{U32}
+        
+        \item \ldots\ \texttt{Mem\{Base: reg, Index: reg, Scale: imm, Disp: imm\}} --- description of x86 address
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Major modules --- 3/3}
+
+    \begin{itemize}
+        
+        \item \texttt{avo/buildtags} --- construct build tags, like \texttt{go:build !appengine \&\& !noasm \&\& gc \&\& !noasm}
+        
+        \item \texttt{avo/reg} --- types for registers, names of physical registers, etc.
+        
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Example 1 --- implicit registers}
+
+    \begin{adjustbox}{max width=8cm}
+    \lstinputlisting[language=Go,numbers=left]{1.go}
+    \end{adjustbox}
+}
+
+\frame{
+    \frametitle{Example 1 --- output}
+
+    \lstinputlisting[numbers=left]{1.s}
+}
+
+\frame{
+    \frametitle{Example 2 --- explicit registers}
+
+    \begin{adjustbox}{max width=8cm}
+    \lstinputlisting[language=Go,numbers=left]{2.go}
+    \end{adjustbox}
+}
+
+\frame{
+    \frametitle{Example 2 --- output}
+
+    \lstinputlisting[numbers=left]{2.s}
+}
+
+\frame{
+    \frametitle{Example 3 --- explicit registers}
+
+    \begin{adjustbox}{max width=6.5cm}
+    \lstinputlisting[language=Go,numbers=left]{3.go}
+    \end{adjustbox}
+}
+
+\frame{
+    \frametitle{Example 3 --- output}
+
+    \lstinputlisting[numbers=left]{3.s}
+}
+
+\end{document}
+
+\frame{
+    \frametitle{}
+
+    \begin{itemize}
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+        
+        \item
+    \end{itemize}
+}
